@@ -1,0 +1,27 @@
+# Dependencies — these are installed fresh on every machine
+node_modules/
+package-lock.json
+package.json
+
+# Environment variables — NEVER commit real credentials
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Runtime
+pids/
+*.pid
+*.seed
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Editor configs (optional — some teams commit these)
+.vscode/
+.idea/
