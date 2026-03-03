@@ -21,26 +21,24 @@ systemd
 Ubuntu 22.04 EC2
 
 * Port **3000 is not exposed publicly**
-* Nginx forwards traffic internally to Node
 * systemd manages the process (auto-restart + boot start)
 * App runs as a non-root user
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 * Node.js 20 (system-wide install)
 * Express.js
 * Ubuntu 22.04
 * systemd
-* Nginx
 * UFW Firewall
 * AWS EC2
 * Git workflow (main/dev/feature branches)
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 nodejs-ec2-deploy/
@@ -57,9 +55,9 @@ nodejs-ec2-deploy/
 
 ---
 
-## 🔹 What This Project Covers
+## What This Project Covers
 
-### 1️⃣ Local Development
+### 1️. Local Development
 
 * Structured Express app
 * Health check endpoint (`/health`)
@@ -68,7 +66,7 @@ nodejs-ec2-deploy/
 
 ---
 
-### 2️⃣ Git Workflow
+### 2️. Git Workflow
 
 * `main` → production
 * `dev` → integration
@@ -78,28 +76,25 @@ nodejs-ec2-deploy/
 
 ---
 
-### 3️⃣ EC2 Provisioning
+### 3️. EC2 Provisioning
 
 * Ubuntu 22.04 instance
-* Restricted SSH access (My IP only)
 * Security group configuration
 * Key-based authentication
 
 ---
 
-### 4️⃣ Server Setup
+### 4️. Server Setup
 
 * System update & package installation
-* Node.js installed system-wide (`/usr/bin/node`)
-* Dedicated `nodeapp` user
 * Application directory in `/var/www`
 
 ---
 
-### 5️⃣ Deployment Process
+### 5️. Deployment Process
 
 ```bash
-git clone <repo>
+git clone https://github.com/samuel-maithre/nodejs-manual-ec2-deployment.git
 npm ci --omit=dev
 cp .env.example .env
 ```
@@ -113,27 +108,9 @@ curl localhost:3000
 
 ---
 
-### 6️⃣ systemd Service
+### 6️. systemd Service
 
 The application is managed using systemd:
-
-```ini
-[Unit]
-Description=Node.js Express Application
-After=network.target
-
-[Service]
-User=nodeapp
-Group=nodeapp
-WorkingDirectory=/var/www/nodejs-app
-Environment=NODE_ENV=production
-EnvironmentFile=/var/www/nodejs-app/.env
-ExecStart=/usr/bin/node server.js
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-```
 
 Commands:
 
@@ -143,35 +120,9 @@ sudo systemctl enable nodejs-app
 sudo systemctl start nodejs-app
 sudo systemctl status nodejs-app
 ```
-
-Logs:
-
-```bash
-sudo journalctl -u nodejs-app -f
-```
-
 ---
 
-## 🌐 Nginx Reverse Proxy
-
-Nginx listens on port 80 and forwards traffic to the internal Node process:
-
-```nginx
-server {
-    listen 80;
-    server_name YOUR_PUBLIC_IP;
-
-    location / {
-        proxy_pass http://127.0.0.1:3000;
-    }
-}
-```
-
-This keeps the Node app off the public internet.
-
----
-
-## 🔐 Security Measures
+## Security Measures
 
 * SSH key-based login only
 * Non-root service execution
@@ -182,24 +133,12 @@ This keeps the Node app off the public internet.
 
 ---
 
-## 📚 What I Learned
+## What I Learned
 
 * How Linux handles processes and ports
 * How systemd manages services
-* Why reverse proxies are used in production
 * Proper Git branching strategy
 * Basic server hardening practices
 * Debugging real deployment issues (permissions, namespace, ports)
-
----
-
-## 🚀 Next Improvements
-
-* Cron-based health monitoring
-* HTTPS with Let's Encrypt
-* CI/CD pipeline (GitHub Actions)
-* Dockerizing the application
-
----
 
 This project reflects a hands-on understanding of how production deployments actually work instead of relying on managed services.
